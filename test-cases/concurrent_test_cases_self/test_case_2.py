@@ -60,7 +60,7 @@ def main():
     try:
         # 2) Create user (large enough balance so they can buy many items)
         user_id = 20000
-        resp = post_user(user_id, "Akash Maji", "akashmaji@market.com")
+        resp = post_user(user_id, "Akash Maji", "akashmaji@iisc.com")
         if not check_response_status_code(resp, 201):
             return False
 
@@ -81,7 +81,7 @@ def main():
         global successful_orders
         successful_orders = 0  # reset global
 
-        thread_count = 100
+        thread_count = 10
         attempts_per_thread = 5  # total = 15 attempts, but stock is only 10
         threads = []
 

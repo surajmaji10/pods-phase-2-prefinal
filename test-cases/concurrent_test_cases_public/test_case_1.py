@@ -20,12 +20,9 @@ def credit_thread_function(user_id, iterations=50):
     """
     global credited_amount
     for _ in range(iterations):
-        amount = 10#random.randint(10, 100)
-        print("credit::",amount)
+        amount = random.randint(10, 100)
         resp = requests.put(f"{WALLET_SERVICE_URL}/wallets/{user_id}",
                             json={"action": "credit", "amount": amount})
-        print("credit respons::",resp.text,"status code::",resp.status_code)
-        # print("status code::",resp.status_code)
         if resp.status_code == 200:
             credited_amount += amount
 
@@ -36,11 +33,9 @@ def debit_thread_function(user_id, iterations=50):
     """
     global debited_amount
     for _ in range(iterations):
-        amount = 10#random.randint(5, 100)
-        print("debit::",amount)
+        amount = random.randint(5, 50)
         resp = requests.put(f"{WALLET_SERVICE_URL}/wallets/{user_id}",
                             json={"action": "debit", "amount": amount})
-        print("debit respons::",resp.text,"status code::",resp.status_code)
         if resp.status_code == 200:
             debited_amount += amount
 
@@ -71,7 +66,7 @@ def main():
         # Final check of the wallet
         final_expected_balance = initial_balance + credited_amount - debited_amount
         resp = get_wallet(user_id)
-        if not test_get_wallet(user_id, resp, True, balance=final_expected_balance):
+        if not test_get_wallet(user_id, resp, final_expected_balance):
             return False
 
         print_pass_message("Wallet concurrency test passed.")

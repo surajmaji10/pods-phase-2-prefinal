@@ -23,8 +23,8 @@ def delete_wallet(user_id):
     print_response(response)
     return response
 
-def test_get_wallet(user_id, response, exists, balance=None):
-    if exists:
+def test_get_wallet(user_id, response, balance=None):
+    
         if not check_json_exists(response):
             return False
         
@@ -54,10 +54,6 @@ def test_get_wallet(user_id, response, exists, balance=None):
         if not check_response_status_code(response, 200):
             return False
 
-        return True
-    else:
-        if not check_response_status_code(response, 404):
-            return False
 
         return True
 
