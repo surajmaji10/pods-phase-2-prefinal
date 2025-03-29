@@ -1,4 +1,4 @@
-package pods.project.accountservice;
+package pods.project.accountservice.entities;
 
 //import javax.persistence.*;
 import jakarta.persistence.*;

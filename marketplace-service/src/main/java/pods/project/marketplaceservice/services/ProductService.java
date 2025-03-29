@@ -24,12 +24,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Component
 @Service
 public class ProductService {
     private final ProductsRepository productsRepository;
     private RestTemplate restTemplate;
+    private final ReentrantLock lock = new ReentrantLock(true);
 
     @Value("${host.url}")
     private String localhost;
@@ -62,19 +64,31 @@ public class ProductService {
         return  ResponseEntity.ok().body(products.get(0));
     }
 
-    @Transactional
+    //@Transactional
     public ResponseEntity<?> updateProducts(Map<String, Object> request) {
-        String order_id = request.get("order_id").toString();
-        List<Map<String, Integer>> products = (List<Map<String, Integer>>) request.get("products");
 
-        for(Map<String, Integer> product: products){
-            Integer id = product.get("product_id");
-            Integer quantity = product.get("quantity");
-            Integer version = product.get("version");
-            productsRepository.updateQuantity(id, quantity);
+       lock.lock();
+
+        try{
+            String order_id = request.get("order_id").toString();
+            List<Map<String, Integer>> products = (List<Map<String, Integer>>) request.get("products");
+
+            for(Map<String, Integer> product: products){
+                Integer id = product.get("product_id");
+                Integer quantity = product.get("quantity");
+                Integer version = product.get("version");
+                productsRepository.updateQuantity(id, quantity);
+            }
+
+            return ResponseEntity.ok().body(productsUpdated(order_id));
         }
-
-        return ResponseEntity.ok().body(productsUpdated(order_id));
+        catch (Exception e){
+            System.out.println(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error "+e.getMessage());
+        }
+        finally {
+            lock.unlock();
+        }
     }
 
     private String productsUpdated(String orderId) {

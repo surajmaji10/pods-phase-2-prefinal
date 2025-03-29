@@ -1,5 +1,8 @@
-package pods.project.walletservice;
+package pods.project.walletservice.services;
 
+import pods.project.walletservice.entities.Wallet;
+import pods.project.walletservice.repositories.WalletRepository;
+import pods.project.walletservice.CustomException.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

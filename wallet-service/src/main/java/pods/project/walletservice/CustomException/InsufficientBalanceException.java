@@ -1,4 +1,4 @@
-package pods.project.walletservice;
+package pods.project.walletservice.CustomException;
 
 public class InsufficientBalanceException extends RuntimeException {
 

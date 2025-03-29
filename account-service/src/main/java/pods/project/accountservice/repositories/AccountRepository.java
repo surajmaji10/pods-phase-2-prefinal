@@ -1,5 +1,6 @@
-package pods.project.accountservice;
+package pods.project.accountservice.repositories;
 
+import pods.project.accountservice.entities.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.repository.query.Param;
@@ -18,5 +19,5 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query(value = "SELECT a FROM Account a WHERE a.id = :id")
-    List<Account> findById1(@Param("id") int id);
+    List<Account> findById(@Param("id") int id);
 }

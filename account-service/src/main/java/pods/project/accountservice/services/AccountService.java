@@ -1,5 +1,11 @@
-package pods.project.accountservice;
+package pods.project.accountservice.services;
 
+import pods.project.accountservice.entities.Account;
+import pods.project.accountservice.repositories.AccountRepository;
+import pods.project.accountservice.CustomException.AccountNotExistsException;
+import pods.project.accountservice.CustomException.EmailAlreadyExistsException;
+import pods.project.accountservice.CustomException.FailedToCancelOrdersException;
+import pods.project.accountservice.CustomException.FailedToRemoveWalletException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -44,7 +50,7 @@ public class AccountService {
     // Method to check if an account exists with the given userId
     public Account getUserById(int userId) {
         // Try to find the user by userId
-        List<Account> account = accountRepository.findById1(userId);
+        List<Account> account = accountRepository.findById(userId);
         if (account.isEmpty()) {
             throw new AccountNotExistsException("User with id " + userId + " does not exist.");
         }

@@ -1,5 +1,8 @@
-package pods.project.walletservice;
+package pods.project.walletservice.controllers;
 
+import pods.project.walletservice.entities.Wallet;
+import pods.project.walletservice.services.WalletService;
+import pods.project.walletservice.CustomException.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;

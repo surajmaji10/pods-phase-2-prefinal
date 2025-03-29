@@ -107,35 +107,46 @@ public class OrderService {
         return  ResponseEntity.ok().body(flattenOrder(orders.get(0)));
     }
 
-    @Transactional
+    //@Transactional
     public ResponseEntity<?> updateProductById(Integer id, Map<String, Object> request) {
-        List<Order> orders = orderRepository.findByOrderId(id);
-        if(orders.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(orderNotFound(id, false));
+        lock.lock();
+        try
+        {
+
+            List<Order> orders = orderRepository.findByOrderId(id);
+            if(orders.isEmpty()){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(orderNotFound(id, false));
+            }
+    //        return  ResponseEntity.ok().body(flattenOrder(orders.get(0)));
+            Integer order_id = Integer.parseInt(request.get("order_id").toString());
+            String status = request.get("status").toString();
+            Order order = orders.get(0);
+
+            System.out.println("ORDER IDs: " + order_id +  ":" + id);
+        
+            if(id != order_id){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(orderNotFound(id, true));
+            }
+
+            if(!status.equals("DELIVERED") || !order.getStatus().equals("PLACED")){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(badOrderPut(id));
+            }
+
+            order.setStatus(status);
+            Order savedOrder = orderRepository.save(order);
+
+            Map<String,Object> map = new HashMap<>();
+            map.put("order_id",savedOrder.getId());
+            map.put("status",savedOrder.getStatus());
+
+            return  ResponseEntity.ok().body(map);
         }
-//        return  ResponseEntity.ok().body(flattenOrder(orders.get(0)));
-        Integer order_id = Integer.parseInt(request.get("order_id").toString());
-        String status = request.get("status").toString();
-        Order order = orders.get(0);
-
-        System.out.println("ORDER IDs: " + order_id +  ":" + id);
-    
-        if(id != order_id){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(orderNotFound(id, true));
+        catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error "+e.getMessage());
         }
-
-        if(!status.equals("DELIVERED") || !order.getStatus().equals("PLACED")){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(badOrderPut(id));
+        finally {
+            lock.unlock();
         }
-
-        order.setStatus(status);
-        Order savedOrder = orderRepository.save(order);
-
-        Map<String,Object> map = new HashMap<>();
-        map.put("order_id",savedOrder.getId());
-        map.put("status",savedOrder.getStatus());
-
-        return  ResponseEntity.ok().body(map);
     }
 
     private final ReentrantLock lock = new ReentrantLock(true);
@@ -425,17 +436,27 @@ public boolean updateProductStockOptimistically(Map<Integer, Integer> updatedSto
 
 
 
-    @Transactional
+    //@Transactional
     public ResponseEntity<?> deleteAllPlaced() {
-//        orderRepository.deleteAllPlaced();
-        List<Order> orders = orderRepository.findAllPlaced();
-        if(orders.isEmpty()){
-            return ResponseEntity.status(HttpStatus.OK).body("No Orders Found.");
+        lock.lock();
+        try
+        {
+    //        orderRepository.deleteAllPlaced();
+            List<Order> orders = orderRepository.findAllPlaced();
+            if(orders.isEmpty()){
+                return ResponseEntity.status(HttpStatus.OK).body("No Orders Found.");
+            }
+
+            cancelPlacedOrders(orders);
+
+            return ResponseEntity.status(HttpStatus.OK).body("All Placed Orders Cancelled.");
         }
-
-        cancelPlacedOrders(orders);
-
-        return ResponseEntity.status(HttpStatus.OK).body("All Placed Orders Cancelled.");
+        catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error "+e.getMessage());
+        }
+        finally {
+            lock.unlock();
+        }
     }
 
     private void cancelPlacedOrders(List<Order> orders) {
@@ -457,15 +478,24 @@ public boolean updateProductStockOptimistically(Map<Integer, Integer> updatedSto
         }
     }
 
-    @Transactional
+    //@Transactional
     public ResponseEntity<?> deleteAllPlacedForUser(Integer id) {
-
-        List<Order> orders =  orderRepository.getPlacedOrdersForUser(id);
-        if(orders.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No PLACED Order Found for User with id=" + id);
+        lock.lock();
+        try
+        {
+            List<Order> orders =  orderRepository.getPlacedOrdersForUser(id);
+            if(orders.isEmpty()){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No PLACED Order Found for User with id=" + id);
+            }
+            cancelPlacedOrders(orders);
+            return ResponseEntity.status(HttpStatus.OK).body("All PLACED Orders CANCELLED for User with id=" + id);
         }
-        cancelPlacedOrders(orders);
-        return ResponseEntity.status(HttpStatus.OK).body("All PLACED Orders CANCELLED for User with id=" + id);
+        catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error "+e.getMessage());
+        }
+        finally {
+            lock.unlock();
+        }
     }
 
     private boolean updateWallet(Integer user_id, Integer newBalance, String type) {

@@ -1,4 +1,4 @@
-package pods.project.walletservice;
+package pods.project.walletservice.CustomException;
 
 public class WalletNotExistsException extends RuntimeException {
 

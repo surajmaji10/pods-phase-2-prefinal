@@ -1,5 +1,6 @@
-package pods.project.walletservice;
+package pods.project.walletservice.repositories;
 
+import pods.project.walletservice.entities.Wallet;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.repository.query.Param;

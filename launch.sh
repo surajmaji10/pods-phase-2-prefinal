@@ -15,7 +15,7 @@ fi
 
 echo -e "${GREEN}Starting Minikube...${NC}"
 echo -e "${GREEN}_________________________________________________________${NC}"
-minikube start --driver=docker --force
+minikube start --driver=docker
 echo
 
 echo -e "${GREEN}Checking Minikube status...${NC}"

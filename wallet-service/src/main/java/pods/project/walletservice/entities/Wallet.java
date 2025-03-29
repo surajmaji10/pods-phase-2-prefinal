@@ -1,4 +1,4 @@
-package pods.project.walletservice;
+package pods.project.walletservice.entities;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 //import javax.persistence.*;

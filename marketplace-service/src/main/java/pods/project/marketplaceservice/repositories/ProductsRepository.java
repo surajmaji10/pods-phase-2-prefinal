@@ -29,7 +29,7 @@ public interface ProductsRepository extends JpaRepository<Product, Integer> {
     @Query("SELECT p FROM Product p WHERE p.id = :id")
     List<Product> findProductByIdIs(@Param("id") Integer id);
 
-    // @Transactional
+    @Transactional
     @Modifying
     @Query("UPDATE Product p SET p.stock_quantity = :quantity WHERE p.id = :id")
     Integer updateQuantity(@Param("id") Integer id, @Param("quantity") Integer quantity);

@@ -1,4 +1,4 @@
-package pods.project.accountservice;
+package pods.project.accountservice.CustomException;
 
 public class FailedToCancelOrdersException extends RuntimeException {
 

@@ -1,4 +1,4 @@
-package pods.project.accountservice;
+package pods.project.accountservice.Config;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
